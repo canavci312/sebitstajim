@@ -1,0 +1,232 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.3
+-- Dumped by pg_dump version 9.6.3
+
+-- Started on 2017-08-23 11:52:22 +03
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 1 (class 3079 OID 12429)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2192 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 189 (class 1259 OID 16865)
+-- Name: books; Type: TABLE; Schema: public; Owner: odoo
+--
+
+CREATE TABLE books (
+    bookid integer NOT NULL,
+    bookname character varying(255),
+    category integer DEFAULT 0 NOT NULL,
+    rentby integer,
+    returndate date
+);
+
+
+ALTER TABLE books OWNER TO odoo;
+
+--
+-- TOC entry 188 (class 1259 OID 16863)
+-- Name: books_bookid_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE books_bookid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE books_bookid_seq OWNER TO odoo;
+
+--
+-- TOC entry 2193 (class 0 OID 0)
+-- Dependencies: 188
+-- Name: books_bookid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE books_bookid_seq OWNED BY books.bookid;
+
+
+--
+-- TOC entry 187 (class 1259 OID 16854)
+-- Name: categories; Type: TABLE; Schema: public; Owner: odoo
+--
+
+CREATE TABLE categories (
+    categoryid integer NOT NULL,
+    categoryname character varying(255)
+);
+
+
+ALTER TABLE categories OWNER TO odoo;
+
+--
+-- TOC entry 186 (class 1259 OID 16852)
+-- Name: categories_categoryid_seq; Type: SEQUENCE; Schema: public; Owner: odoo
+--
+
+CREATE SEQUENCE categories_categoryid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE categories_categoryid_seq OWNER TO odoo;
+
+--
+-- TOC entry 2194 (class 0 OID 0)
+-- Dependencies: 186
+-- Name: categories_categoryid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: odoo
+--
+
+ALTER SEQUENCE categories_categoryid_seq OWNED BY categories.categoryid;
+
+
+--
+-- TOC entry 185 (class 1259 OID 16847)
+-- Name: persons; Type: TABLE; Schema: public; Owner: odoo
+--
+
+CREATE TABLE persons (
+    personid integer NOT NULL,
+    personname character varying(255)
+);
+
+
+ALTER TABLE persons OWNER TO odoo;
+
+--
+-- TOC entry 190 (class 1259 OID 16930)
+-- Name: rents; Type: TABLE; Schema: public; Owner: odoo
+--
+
+CREATE TABLE rents (
+    bookid integer,
+    personid integer,
+    hiredate date,
+    returndate date,
+    hasreturned boolean DEFAULT false
+);
+
+
+ALTER TABLE rents OWNER TO odoo;
+
+--
+-- TOC entry 2056 (class 2604 OID 16868)
+-- Name: books bookid; Type: DEFAULT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY books ALTER COLUMN bookid SET DEFAULT nextval('books_bookid_seq'::regclass);
+
+
+--
+-- TOC entry 2055 (class 2604 OID 16857)
+-- Name: categories categoryid; Type: DEFAULT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY categories ALTER COLUMN categoryid SET DEFAULT nextval('categories_categoryid_seq'::regclass);
+
+
+--
+-- TOC entry 2064 (class 2606 OID 16871)
+-- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY books
+    ADD CONSTRAINT books_pkey PRIMARY KEY (bookid);
+
+
+--
+-- TOC entry 2062 (class 2606 OID 16859)
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (categoryid);
+
+
+--
+-- TOC entry 2060 (class 2606 OID 16851)
+-- Name: persons persons_pkey; Type: CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY persons
+    ADD CONSTRAINT persons_pkey PRIMARY KEY (personid);
+
+
+--
+-- TOC entry 2066 (class 2606 OID 16877)
+-- Name: books books_category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY books
+    ADD CONSTRAINT books_category_fkey FOREIGN KEY (category) REFERENCES categories(categoryid);
+
+
+--
+-- TOC entry 2065 (class 2606 OID 16872)
+-- Name: books books_rentby_fkey; Type: FK CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY books
+    ADD CONSTRAINT books_rentby_fkey FOREIGN KEY (rentby) REFERENCES persons(personid);
+
+
+--
+-- TOC entry 2067 (class 2606 OID 16934)
+-- Name: rents rents_bookid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY rents
+    ADD CONSTRAINT rents_bookid_fkey FOREIGN KEY (bookid) REFERENCES books(bookid);
+
+
+--
+-- TOC entry 2068 (class 2606 OID 16939)
+-- Name: rents rents_personid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: odoo
+--
+
+ALTER TABLE ONLY rents
+    ADD CONSTRAINT rents_personid_fkey FOREIGN KEY (personid) REFERENCES persons(personid);
+
+
+-- Completed on 2017-08-23 11:52:23 +03
+
+--
+-- PostgreSQL database dump complete
+--
+
